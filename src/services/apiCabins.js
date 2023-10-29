@@ -9,23 +9,41 @@ export async function getCabins() {
   return data;
 }
 
-export async function createCabin(newCabin) {
+export async function createAndEditCabin(newCabin, id) {
+  console.log(newCabin, id);
+  // To check if there's already an image when editing
+  const hasImagePath = newCabin.image?.startsWith?.(supabaseUrl);
   // To upload image: create unique name + image path
   const imageName = `${Math.random()}-${newCabin.image.name}`.replaceAll(
     '/',
     ''
   );
   // https://mhrmpbmfuesesuyejzmo.supabase.co/storage/v1/object/public/cabin-images/cabin-001.jpg
-  const imagePath = `${supabaseUrl}/storage/v1/object/public/cabin-images/${imageName}`;
+  // if there's already an image, ie the same, use it, if not create one
+  const imagePath = hasImagePath
+    ? newCabin.image
+    : `${supabaseUrl}/storage/v1/object/public/cabin-images/${imageName}`;
 
-  // Create cabin
-  const { data, error } = await supabase
-    .from('cabins')
-    // .insert([{ some_column: 'someValue', other_column: 'otherValue' }])
-    // .insert([newCabin])
-    // image upload:
-    .insert([{ ...newCabin, image: imagePath }])
-    .select();
+  // Create/Edit cabin
+  let query = supabase.from('cabins');
+
+  // CREATE  -- if not in editing mode
+  if (!id)
+    query = query
+      // .insert([newCabin])
+      // image upload:
+      .insert([{ ...newCabin, image: imagePath }]);
+  // .select()
+  // .single(); // takes it out of the array it's in
+
+  // EDIT
+  if (id) query = query.update({ ...newCabin, image: imagePath }).eq('id', id);
+  // .select();
+
+  const { data, error } = await query.select();
+  // .single(); // single takes it out of the array it's in;
+  // error if I leave this in: "The result contains 4 rows" 'JSON object requested, multiple (or no) rows returned'
+
   if (error) {
     console.error(error);
     throw new Error('Cabin could not be created');
