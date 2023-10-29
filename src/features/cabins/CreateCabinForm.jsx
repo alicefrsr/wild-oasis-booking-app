@@ -29,8 +29,11 @@ function CreateCabinForm() {
     onError: (err) => toast.error(err.message),
   });
 
-  function onSubmit(formData) {
-    mutate(formData);
+  function onSubmit(data) {
+    // console.log(data);
+    // mutate(data);
+    // uploading an image
+    mutate({ ...data, image: data.image[0] });
   }
   function onError(errors) {
     console.log(errors);
@@ -110,9 +113,14 @@ function CreateCabinForm() {
         />
       </FormRow>
 
-      <FormRow label='Cabin Photo'>
+      <FormRow label='Cabin Photo' error={errors?.image?.message}>
         {/* <Label htmlFor='image'>Cabin photo</Label> */}
-        <FileInput id='image' accept='image/*' />
+        <FileInput
+          id='image'
+          accept='image/*'
+          // type='file' // set with styled components in FileInput
+          {...register('image', { required: 'This field is required' })}
+        />
       </FormRow>
 
       <FormRow>
