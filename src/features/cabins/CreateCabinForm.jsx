@@ -10,7 +10,7 @@ import FileInput from '../../ui/FileInput';
 import Textarea from '../../ui/Textarea';
 import FormRow from '../../ui/FormRow';
 import { useCreateCabin } from './useCreateCabin';
-import { useEditCabin } from './useEditCabin';
+import { useUpdateCabin } from './useUpdateCabin';
 
 function CreateCabinForm({ cabinToEdit = {} }) {
   const { id: editId, ...editValues } = cabinToEdit;
@@ -25,7 +25,7 @@ function CreateCabinForm({ cabinToEdit = {} }) {
 
   // custom hooks, react query refactor
   const { isCreating, createCabin } = useCreateCabin();
-  const { isEditing, editCabin } = useEditCabin();
+  const { isEditing, editCabin } = useUpdateCabin();
 
   // REFACTOR IN CUSTOM HOOK useCreateCabin
   // const queryClient = useQueryClient();
