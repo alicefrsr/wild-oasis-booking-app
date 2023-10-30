@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import toast from 'react-hot-toast';
-import { createAndEditCabin } from '../../services/apiCabins';
+// import { useMutation, useQueryClient } from '@tanstack/react-query';
+// import toast from 'react-hot-toast';
+// import { createAndEditCabin } from '../../services/apiCabins';
 
 import Input from '../../ui/Input';
 import Form from '../../ui/Form';
@@ -9,6 +9,8 @@ import Button from '../../ui/Button';
 import FileInput from '../../ui/FileInput';
 import Textarea from '../../ui/Textarea';
 import FormRow from '../../ui/FormRow';
+import { useCreateCabin } from './useCreateCabin';
+import { useEditCabin } from './useEditCabin';
 
 function CreateCabinForm({ cabinToEdit = {} }) {
   const { id: editId, ...editValues } = cabinToEdit;
@@ -20,39 +22,46 @@ function CreateCabinForm({ cabinToEdit = {} }) {
     defaultValues: editMode ? editValues : {},
   });
   const { errors } = formState;
-  const queryClient = useQueryClient();
+
+  // custom hooks, react query refactor
+  const { isCreating, createCabin } = useCreateCabin();
+  const { isEditing, editCabin } = useEditCabin();
+
+  // REFACTOR IN CUSTOM HOOK useCreateCabin
+  // const queryClient = useQueryClient();
 
   // create cabin
-  const { mutate: createCabin, isLoading: isCreating } = useMutation({
-    // mutationFn: newCabin=> createCabin(newCabin),
-    mutationFn: createAndEditCabin,
-    onSuccess: () => {
-      toast.success('New cabin successfully created');
-      // invalidate cache so that it refetches data
-      queryClient.invalidateQueries({
-        queryKey: ['cabins'],
-      });
-      // reset fields
-      reset();
-    },
-    onError: (err) => toast.error(err.message),
-  });
+  // const { mutate: createCabin, isLoading: isCreating } = useMutation({
+  //   // mutationFn: newCabin=> createCabin(newCabin),
+  //   mutationFn: createAndEditCabin,
+  //   onSuccess: () => {
+  //     toast.success('New cabin successfully created');
+  //     // invalidate cache so that it refetches data
+  //     queryClient.invalidateQueries({
+  //       queryKey: ['cabins'],
+  //     });
+  //     // reset fields
+  //     reset();
+  //   },
+  //   onError: (err) => toast.error(err.message),
+  // });
 
+  // REFACTOR IN CUSTOM HOOK useCreateCabin
   // edit cabin
-  const { mutate: editCabin, isLoading: isEditing } = useMutation({
-    // mutationFn: newCabin=> createCabin(newCabin),
-    mutationFn: ({ newCabinData, id }) => createAndEditCabin(newCabinData, id),
-    onSuccess: () => {
-      toast.success('Cabin successfully edited');
-      // invalidate cache so that it refetches data
-      queryClient.invalidateQueries({
-        queryKey: ['cabins'],
-      });
-      // reset fields
-      reset();
-    },
-    onError: (err) => toast.error(err.message),
-  });
+  // const { mutate: editCabin, isLoading: isEditing } = useMutation({
+  //   // mutationFn: newCabin=> createCabin(newCabin),
+  //   mutationFn: ({ newCabinData, id }) => createAndEditCabin(newCabinData, id),
+  //   onSuccess: () => {
+  //     toast.success('Cabin successfully edited');
+  //     // invalidate cache so that it refetches data
+  //     queryClient.invalidateQueries({
+  //       queryKey: ['cabins'],
+  //     });
+  //     // reset fields
+  //     reset();
+  //   },
+  //   onError: (err) => toast.error(err.message),
+  // });
 
   const isWorking = isCreating || isEditing;
 
@@ -62,9 +71,27 @@ function CreateCabinForm({ cabinToEdit = {} }) {
     // mutate(data);
     // uploading an image
     // mutate({ ...data, image: data.image[0] });
-    if (editMode) editCabin({ newCabinData: { ...data, image }, id: editId });
+    if (editMode)
+      editCabin(
+        { newCabinData: { ...data, image }, id: editId },
+        {
+          onSuccess: (data, editId) => {
+            console.log(data);
+            reset(editId);
+          },
+        }
+      );
     // else createCabin({ ...data, image: data.image[0] });
-    else createCabin({ ...data, image: image });
+    else
+      createCabin(
+        { ...data, image: image },
+        {
+          onSuccess: (data) => {
+            console.log(data);
+            reset();
+          },
+        }
+      );
   }
   function onError(errors) {
     console.log(errors);
@@ -138,7 +165,6 @@ function CreateCabinForm({ cabinToEdit = {} }) {
         <Textarea
           type='number'
           id='description'
-          disabled={isWorking}
           defaultValue=''
           {...register('description', { required: 'This field is required' })}
         />
