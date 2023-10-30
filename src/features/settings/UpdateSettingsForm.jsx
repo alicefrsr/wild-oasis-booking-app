@@ -19,13 +19,20 @@ function UpdateSettingsForm() {
 
   const { isUpdating, updateSetting } = useUpdateSetting();
 
-  function handleUpdate(e, fieldName) {
-    const { value } = e.target;
-    console.log(value);
-    if (!value) return;
+  // function handleUpdate(e, fieldName) {
+  function handleUpdate(e) {
+    // improvements:
+    // assigning the same value to the id of the <Input> as the variable, e.g. minBookingLength, rather than min-nights, then we don't need to pass an additional field into the handleUpdate, and instead simply get the id from the target
+    // const { value } = e.target;
+    const { value, id, defaultValue } = e.target;
+
+    // if (!value) return;
+    if (!value || !id || defaultValue === value) return;
     updateSetting({
-      [fieldName]: value,
+      [id]: value,
     });
+    // this line helps handle the case where if we click in and out of the input multiple times, then it will update multiple times because the defaultValue differs from the new value
+    e.target.defaultValue === value;
   }
 
   if (isLoading) return <Spinner />;
@@ -35,36 +42,44 @@ function UpdateSettingsForm() {
       <FormRow label='Minimum nights/booking'>
         <Input
           type='number'
-          id='min-nights'
+          // id='min-nights'
+          id='minBookingLength'
           defaultValue={minBookingLength}
-          onBlur={(e) => handleUpdate(e, 'minBookingLength')}
+          // onBlur={(e) => handleUpdate(e, 'minBookingLength')}
+          onBlur={(e) => handleUpdate(e)}
           disabled={isUpdating}
         />
       </FormRow>
       <FormRow label='Maximum nights/booking'>
         <Input
           type='number'
-          id='max-nights'
+          // id='max-nights'
+          id='maxBookingLength'
           defaultValue={maxBookingLength}
-          onBlur={(e) => handleUpdate(e, 'maxBookingLength')}
+          // onBlur={(e) => handleUpdate(e, 'maxBookingLength')}
+          onBlur={(e) => handleUpdate(e)}
           disabled={isUpdating}
         />
       </FormRow>
       <FormRow label='Maximum guests/booking'>
         <Input
           type='number'
-          id='max-guests'
+          // id='max-guests'
+          id='maxGuestsPerBooking'
           defaultValue={maxGuestsPerBooking}
-          onBlur={(e) => handleUpdate(e, 'maxGuestsPerBooking')}
+          // onBlur={(e) => handleUpdate(e, 'maxGuestsPerBooking')}
+          onBlur={(e) => handleUpdate(e)}
           disabled={isUpdating}
         />
       </FormRow>
       <FormRow label='Breakfast price'>
         <Input
           type='number'
-          id='breakfast-price'
+          // id='breakfast-price'
+          id='breakfastPrice'
           defaultValue={breakfastPrice}
-          onBlur={(e) => handleUpdate(e, 'breakfastPrice')}
+          // onBlur={(e) => handleUpdate(e, 'breakfastPrice')}
+          onBlur={(e) => handleUpdate(e)}
           disabled={isUpdating}
         />
       </FormRow>
