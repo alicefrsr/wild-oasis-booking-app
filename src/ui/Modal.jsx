@@ -1,4 +1,11 @@
-import { cloneElement, createContext, useContext, useState } from 'react';
+import {
+  cloneElement,
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { createPortal } from 'react-dom';
 import { HiXMark } from 'react-icons/hi2';
 import styled from 'styled-components';
@@ -78,12 +85,34 @@ function Open({ children, opens: opensWindowName }) {
 
 function Window({ children, name }) {
   const { openName, close } = useContext(ModalContext);
+  // ref the element we want ot clikc outside of (<StyledModal>)
+  const ref = useRef();
+
+  useEffect(() => {
+    function handleClick(e) {
+      if (
+        ref.current && // current is where the dom node that references <StyleModal> is stored
+        !ref.current.contains(e.target) // = if window does not contain the element we clicked on (e.target)
+      ) {
+        console.log('click outside');
+        close();
+      }
+    }
+
+    // document.addEventListener('click', handleClick);
+    // problem: 'add new cabin' button now doesnt work: modal 'opens' but click outside immediately detected therefore modal closes again
+    // fix: pass in 3rd argument to prevent listening event on bubbling phase, but on the capturing phase:
+    document.addEventListener('click', handleClick, true); // true = capturing phase
+
+    // clean up
+    return () => document.removeEventListener('click', handleClick);
+  }, [close]);
 
   if (name !== openName) return null;
 
   return createPortal(
     <Overlay>
-      <StyledModal>
+      <StyledModal ref={ref}>
         <Button onClick={close}>
           <HiXMark />
         </Button>

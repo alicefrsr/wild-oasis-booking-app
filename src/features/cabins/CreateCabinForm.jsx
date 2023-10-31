@@ -16,7 +16,6 @@ function CreateCabinForm({ cabinToEdit = {}, onCloseModal }) {
   const { id: editId, ...editValues } = cabinToEdit;
   // Form: are we adding a new cabin (values = {}) or editing an existing one (values ={editValues})?
   const editMode = Boolean(editId);
-  console.log(editMode);
 
   const { register, handleSubmit, reset, getValues, formState } = useForm({
     defaultValues: editMode ? editValues : {},
