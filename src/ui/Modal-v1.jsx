@@ -1,4 +1,3 @@
-import { cloneElement, createContext, useContext, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { HiXMark } from 'react-icons/hi2';
 import styled from 'styled-components';
@@ -51,52 +50,19 @@ const Button = styled.button`
     color: var(--color-grey-500);
   }
 `;
-// create context
-const ModalContext = createContext();
 
-// create parent component which contains its own state
-function Modal({ children }) {
-  // state
-  const [openName, setOpenName] = useState('');
-  // handler fns
-  const open = setOpenName;
-  const close = () => setOpenName('');
-  return (
-    <ModalContext.Provider value={{ openName, open, close }}>
-      {children}
-    </ModalContext.Provider>
-  );
-}
-
-// create children
-function Open({ children, opens: opensWindowName }) {
-  // use context to access handler fn
-  const { open } = useContext(ModalContext);
-  // return children // clone children instead to pass in different props
-  return cloneElement(children, { onClick: () => open(opensWindowName) });
-}
-
-function Window({ children, name }) {
-  const { openName, close } = useContext(ModalContext);
-
-  if (name !== openName) return null;
-
+function Modal({ children, onClose }) {
   return createPortal(
     <Overlay>
       <StyledModal>
-        <Button onClick={close}>
+        <Button onClick={onClose}>
           <HiXMark />
         </Button>
-        {/* clone children to pass in 'close' props for CreateCabinForm conditional 'type' rendering  */}
-        <div>{cloneElement(children, { onCloseModal: close })}</div>
+        <div>{children}</div>
       </StyledModal>
     </Overlay>,
     document.body
   );
 }
-
-// set these children props on Modal
-Modal.Open = Open;
-Modal.Window = Window;
 
 export default Modal;
