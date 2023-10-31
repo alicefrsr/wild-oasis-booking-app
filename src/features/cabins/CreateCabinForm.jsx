@@ -14,6 +14,7 @@ import { useUpdateCabin } from './useUpdateCabin';
 
 function CreateCabinForm({ cabinToEdit = {}, onCloseModal }) {
   const { id: editId, ...editValues } = cabinToEdit;
+
   // Form: are we adding a new cabin (values = {}) or editing an existing one (values ={editValues})?
   const editMode = Boolean(editId);
 
@@ -77,10 +78,37 @@ function CreateCabinForm({ cabinToEdit = {}, onCloseModal }) {
           onSuccess: (data, editId) => {
             console.log(data);
             reset(editId);
+            onCloseModal?.();
           },
         }
       );
     // else createCabin({ ...data, image: data.image[0] });
+    else
+      createCabin(
+        { ...data, image: image },
+        {
+          onSuccess: (data) => {
+            console.log(data);
+            reset();
+            onCloseModal?.();
+          },
+        }
+      );
+  }
+
+  function onSubmit(data) {
+    const image = typeof data.image === 'string' ? data.image : data.image[0];
+    if (editMode)
+      editCabin(
+        { newCabinData: { ...data, image }, id: editId },
+        {
+          onSuccess: (data, editId) => {
+            console.log(data);
+            reset(editId);
+            onCloseModal?.();
+          },
+        }
+      );
     else
       createCabin(
         { ...data, image: image },
