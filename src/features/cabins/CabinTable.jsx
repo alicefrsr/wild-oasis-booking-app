@@ -1,12 +1,12 @@
 // import styled from 'styled-components';
 // import { useQuery } from '@tanstack/react-query';
 // import { getCabins } from '../../services/apiCabins';
-import Spinner from '../../ui/Spinner';
-import CabinRow from './CabinRow';
-
-import { useCabins } from './useCabins';
-import Table from '../../ui/Table';
 import { useSearchParams } from 'react-router-dom';
+import CabinRow from './CabinRow';
+import Table from '../../ui/Table';
+import Spinner from '../../ui/Spinner';
+import Empty from '../../ui/Empty';
+import { useCabins } from './useCabins';
 
 // const Table = styled.div`
 //   border: 1px solid var(--color-grey-200);
@@ -37,6 +37,7 @@ function CabinTable() {
   const [searchParams] = useSearchParams();
 
   if (isLoading) return <Spinner />;
+  if (!cabins.length) return <Empty resourceName='cabins' />;
 
   // FILTER
   const filterValue = searchParams.get('discount') || 'all';
@@ -56,12 +57,12 @@ function CabinTable() {
   // SORT
   const sortBy = searchParams.get('sortBy') || 'startDate-asc ';
   const [field, direction] = sortBy.split('-');
-  console.log(field, direction);
+  // console.log(field, direction);
   const modifier = direction === 'asc' ? 1 : -1;
   const sortedCabins = filteredCabins.sort(
     (a, b) => (a[field] - b[field]) * modifier
   );
-  console.log(modifier, sortedCabins);
+  // console.log(modifier, sortedCabins);
 
   return (
     <Table columns='0.6fr 1.8fr 2.2fr 1fr 1fr 1fr'>
