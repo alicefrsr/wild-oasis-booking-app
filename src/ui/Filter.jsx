@@ -1,4 +1,5 @@
-import styled, { css } from "styled-components";
+import { useSearchParams } from 'react-router-dom';
+import styled, { css } from 'styled-components';
 
 const StyledFilter = styled.div`
   border: 1px solid var(--color-grey-100);
@@ -15,7 +16,9 @@ const FilterButton = styled.button`
   border: none;
 
   ${(props) =>
-    props.active &&
+    // props.active &&  // warning console message
+    props.$active && // needs to be a transient prop : $
+    // props.active.toString() === 'true' && // alt fix : needs to be a string
     css`
       background-color: var(--color-brand-600);
       color: var(--color-brand-50);
@@ -33,3 +36,42 @@ const FilterButton = styled.button`
     color: var(--color-brand-50);
   }
 `;
+
+function Filter({ filterField, options }) {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const currentFilter = searchParams.get(filterField) || options.at(0).value;
+
+  function handleClick(value) {
+    // searchParams.set('discount', value);
+    searchParams.set(filterField, value); // when refactoring
+    setSearchParams(searchParams);
+  }
+  return (
+    <StyledFilter>
+      {/* <FilterButton onClick={() => handleClick('all')}>All</FilterButton>
+      <FilterButton onClick={() => handleClick('no-discount')}>
+        No discount
+      </FilterButton>
+      <FilterButton onClick={() => handleClick('with-discount')}>
+        With discount
+      </FilterButton> */}
+
+      {/* Refactored for reusability */}
+      {options.map((option) => (
+        <FilterButton
+          onClick={() => handleClick(option.value)}
+          key={option.value}
+          // active={option.value === currentFilter}
+          $active={option.value === currentFilter}
+          // active={option.value === currentFilter ? 'true' : 'false'}
+          disabled={option.value === currentFilter}
+        >
+          {option.label}
+        </FilterButton>
+      ))}
+    </StyledFilter>
+  );
+}
+
+export default Filter;
