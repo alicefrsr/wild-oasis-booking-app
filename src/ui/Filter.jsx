@@ -45,6 +45,9 @@ function Filter({ filterField, options }) {
   function handleClick(value) {
     // searchParams.set('discount', value);
     searchParams.set(filterField, value); // when refactoring
+    // bugfix
+    if (searchParams.get('page')) searchParams.set('page', 1);
+    //
     setSearchParams(searchParams);
   }
   return (
