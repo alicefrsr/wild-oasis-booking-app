@@ -1,6 +1,9 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 const ButtonIcon = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
   background: none;
   border: none;
   padding: 0.6rem;
