@@ -50,6 +50,7 @@ export async function updateCurrentUser({ fullName, password, avatar }) {
 
   if (error) throw new Error(error.message);
   if (!avatar) return data;
+  // if (!avatar) return data.user;
 
   // 2. Upload avatar image
   const fileName = `avatar-${data.user.id}-${Math.random()}`;
@@ -67,4 +68,5 @@ export async function updateCurrentUser({ fullName, password, avatar }) {
   });
   if (error2) throw new Error(error.message);
   return updatedUser;
+  // return updatedUser.user;
 }

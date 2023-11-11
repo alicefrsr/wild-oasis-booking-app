@@ -30,8 +30,8 @@ function UpdateUserDataForm() {
       { fullName, avatar },
       {
         onSuccess: () => {
-          setAvatar(null);
-          e.target.reset();
+          setAvatar(null); // reset to its initial state
+          e.target.reset(); // standard html
         },
       }
     );

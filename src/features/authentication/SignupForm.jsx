@@ -15,7 +15,13 @@ function SignupForm() {
 
   function onSubmit({ fullName, email, password }) {
     // console.log(data);
-    signup({ fullName, email, password }, { onSettled: reset });
+    signup(
+      { fullName, email, password },
+      {
+        // onSettled: reset
+        onSettled: () => reset(), //J
+      }
+    );
   }
   if (isLoading) return <Spinner />;
   return (
