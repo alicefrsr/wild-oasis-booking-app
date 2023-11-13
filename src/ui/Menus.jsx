@@ -86,6 +86,10 @@ function Toggle({ id }) {
   const { openId, close, open, setPosition } = useContext(MenusContext);
 
   function handleClick(e) {
+    // (outsideClick -> set listenCapturing to false) then prevent event from bubbling up
+    // therefore will not be detected as an outside click
+    e.stopPropagation();
+    console.log('close');
     const rect = e.target.closest('button').getBoundingClientRect();
     // console.log(rect);
     setPosition({
@@ -104,7 +108,10 @@ function Toggle({ id }) {
 
 function List({ id, children }) {
   const { openId, position, close } = useContext(MenusContext);
-  const ref = useOutsideClick(close);
+  const ref = useOutsideClick(() => {
+    console.log('close from outsideClick');
+    close();
+  }, false);
 
   if (openId !== id) return null;
   return createPortal(

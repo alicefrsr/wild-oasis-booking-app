@@ -19,7 +19,7 @@ function DashboardLayout() {
   const { isLoading: isLoadingBookings, bookings } = useRecentBookings();
   const {
     isLoading: isLoadingStays,
-    stays,
+    // stays,
     confirmedStays,
     numDays,
   } = useRecentStays();
@@ -38,7 +38,7 @@ function DashboardLayout() {
         numDays={numDays}
         cabinCount={cabins.length}
       />
-      <TodayActivity>Today's activity</TodayActivity>
+      <TodayActivity />
       <DurationChart confirmedStays={confirmedStays} />
       <div>Chart sales</div>
       <SalesChart bookings={bookings} numDays={numDays} />
