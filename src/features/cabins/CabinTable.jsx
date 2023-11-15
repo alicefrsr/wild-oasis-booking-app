@@ -42,7 +42,7 @@ function CabinTable() {
 
   // FILTER
   const filterValue = searchParams.get('discount') || 'all';
-  console.log(filterValue);
+  // console.log(filterValue);
 
   let filteredCabins;
   if (filterValue === 'all') filteredCabins = cabins;
